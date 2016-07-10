@@ -8,3 +8,5 @@ plugins/
 *.swp
 .DS_Store
 Thumbs.db
+release
+cache

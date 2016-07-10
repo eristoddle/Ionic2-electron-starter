@@ -2,8 +2,9 @@ var gulp = require('gulp'),
     gulpWatch = require('gulp-watch'),
     del = require('del'),
     runSequence = require('run-sequence'),
-    argv = process.argv;
-
+    argv = process.argv,
+    electron = require('gulp-electron'),
+    packageJson = require('./package.json');
 
 /**
  * Ionic hooks
@@ -35,38 +36,75 @@ var copyScripts = require('ionic-gulp-scripts-copy');
 
 var isRelease = argv.indexOf('--release') > -1;
 
-gulp.task('watch', ['clean'], function(done){
-  runSequence(
-    ['sass', 'html', 'fonts', 'scripts'],
-    function(){
-      gulpWatch('app/**/*.scss', function(){ gulp.start('sass'); });
-      gulpWatch('app/**/*.html', function(){ gulp.start('html'); });
-      buildBrowserify({ watch: true }).on('end', done);
-    }
-  );
+gulp.task('watch', ['clean'], function (done) {
+    runSequence(
+        ['sass', 'html', 'fonts', 'scripts'],
+        function () {
+            gulpWatch('app/**/*.scss', function () {
+                gulp.start('sass');
+            });
+            gulpWatch('app/**/*.html', function () {
+                gulp.start('html');
+            });
+            buildBrowserify({
+                watch: true
+            }).on('end', done);
+        }
+    );
 });
 
-gulp.task('build', ['clean'], function(done){
-  runSequence(
-    ['sass', 'html', 'fonts', 'scripts'],
-    function(){
-      buildBrowserify({
-        minify: isRelease,
-        browserifyOptions: {
-          debug: !isRelease
-        },
-        uglifyOptions: {
-          mangle: false
+gulp.task('build', ['clean'], function (done) {
+    runSequence(
+        ['sass', 'html', 'fonts', 'scripts'],
+        function () {
+            buildBrowserify({
+                minify: isRelease,
+                browserifyOptions: {
+                    debug: !isRelease
+                },
+                uglifyOptions: {
+                    mangle: false
+                }
+            }).on('end', done);
         }
-      }).on('end', done);
-    }
-  );
+    );
 });
 
 gulp.task('sass', buildSass);
 gulp.task('html', copyHTML);
 gulp.task('fonts', copyFonts);
 gulp.task('scripts', copyScripts);
-gulp.task('clean', function(){
-  return del('www/build');
+gulp.task('clean', function () {
+    return del('www/build');
+});
+
+//https://github.com/mainyaa/gulp-electron
+gulp.task('electron', function () {
+    gulp.src("")
+        .pipe(electron({
+            src: './app',
+            packageJson: packageJson,
+            release: './release',
+            cache: './cache',
+            version: 'v0.37.4',
+            packaging: true,
+            token: 'c0c8c81bc58bce8c326378efc877bb5db4503b91',
+            platforms: ['win32-ia32', 'darwin-x64', 'linux-x64'],
+            platformResources: {
+                darwin: {
+                    CFBundleDisplayName: packageJson.name,
+                    CFBundleIdentifier: packageJson.name,
+                    CFBundleName: packageJson.name,
+                    CFBundleVersion: packageJson.version,
+                    icon: 'gulp-electron.icns'
+                },
+                win: {
+                    "version-string": packageJson.version,
+                    "file-version": packageJson.version,
+                    "product-version": packageJson.version,
+                    "icon": 'gulp-electron.ico'
+                }
+            }
+        }))
+        .pipe(gulp.dest(""));
 });

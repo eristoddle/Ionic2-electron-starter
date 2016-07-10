@@ -1,3 +1,4 @@
+//http://blog.thecodecampus.de/setup-ionic-2-electron-typescript-angular2/
 'use strict';
 const electron = require('electron');
 // Module to control application life.
