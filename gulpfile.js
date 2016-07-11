@@ -1,9 +1,11 @@
 var gulp = require('gulp'),
+    run = require('gulp-run'),
     gulpWatch = require('gulp-watch'),
     del = require('del'),
     runSequence = require('run-sequence'),
     argv = process.argv,
     electron = require('gulp-electron'),
+    runSequence = require('run-sequence'),
     packageJson = require('./package.json');
 
 process.NODE_ENV = 'test';
@@ -82,32 +84,57 @@ gulp.task('clean', function () {
 });
 
 //https://github.com/mainyaa/gulp-electron
-gulp.task('electron', ['clean', 'build'], function () {
-    gulp.src("")
-        .pipe(electron({
-            src: './platforms/browser/www',
-            packageJson: packageJson,
-            release: './release',
-            cache: './cache',
-            version: 'v0.37.4',
-            packaging: true,
-            token: '',
-            platforms: ['darwin-x64', 'win32-ia32'],
-            platformResources: {
-                darwin: {
-                    CFBundleDisplayName: packageJson.name,
-                    CFBundleIdentifier: packageJson.name,
-                    CFBundleName: packageJson.name,
-                    CFBundleVersion: packageJson.version,
-                    icon: 'gulp-electron.icns'
-                },
-                win: {
-                    "version-string": packageJson.version,
-                    "file-version": packageJson.version,
-                    "product-version": packageJson.version,
-                    "icon": 'gulp-electron.ico'
-                }
-            }
-        }))
-        .pipe(gulp.dest(""));
+//TODO: Switch to this
+// gulp.task('electron', ['clean', 'build'], function () {
+//     gulp.src("")
+//         .pipe(electron({
+//             src: 'www',
+//             packageJson: packageJson,
+//             release: './release',
+//             cache: './cache',
+//             version: 'v0.37.4',
+//             packaging: true,
+//             token: '',
+//             platforms: ['darwin-x64', 'win32-ia32'],
+//             platformResources: {
+//                 darwin: {
+//                     CFBundleDisplayName: packageJson.name,
+//                     CFBundleIdentifier: packageJson.name,
+//                     CFBundleName: packageJson.name,
+//                     CFBundleVersion: packageJson.version,
+//                     icon: 'gulp-electron.icns'
+//                 },
+//                 win: {
+//                     "version-string": packageJson.version,
+//                     "file-version": packageJson.version,
+//                     "product-version": packageJson.version,
+//                     "icon": 'gulp-electron.ico'
+//                 }
+//             }
+//         }))
+//         .pipe(gulp.dest(""));
+// });
+//
+gulp.task('copy-package-json', function () {
+    return gulp.src('./package.json')
+        .pipe(gulp.dest('./www/'));
+});
+
+gulp.task('electron:all', function () {
+    return runSequence('clean', 'build', 'copy-package-json', 'electron:osx', 'electron:win', 'electron:nix');
+});
+
+gulp.task('electron:osx', function () {
+    return run('npm run pack:osx').exec()
+        .pipe(gulp.dest('output'));
+});
+
+gulp.task('electron:win', function () {
+    return run('npm run pack:win').exec()
+        .pipe(gulp.dest('output'));
+});
+
+gulp.task('electron:nix', function () {
+    return run('npm run pack:nix').exec()
+        .pipe(gulp.dest('output'));
 });
