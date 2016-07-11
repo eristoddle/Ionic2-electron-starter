@@ -6,6 +6,8 @@ var gulp = require('gulp'),
     electron = require('gulp-electron'),
     packageJson = require('./package.json');
 
+process.NODE_ENV = 'test';
+
 /**
  * Ionic hooks
  * Add ':before' or ':after' to any Ionic project command name to run the specified
@@ -79,17 +81,17 @@ gulp.task('clean', function () {
 });
 
 //https://github.com/mainyaa/gulp-electron
-gulp.task('electron', function () {
+gulp.task('electron', ['clean', 'build'], function () {
     gulp.src("")
         .pipe(electron({
-            src: './app',
+            src: 'www',
             packageJson: packageJson,
             release: './release',
             cache: './cache',
             version: 'v0.37.4',
             packaging: true,
             token: 'c0c8c81bc58bce8c326378efc877bb5db4503b91',
-            platforms: ['win32-ia32', 'darwin-x64', 'linux-x64'],
+            platforms: ['darwin-x64', 'win32-ia32'],
             platformResources: {
                 darwin: {
                     CFBundleDisplayName: packageJson.name,
