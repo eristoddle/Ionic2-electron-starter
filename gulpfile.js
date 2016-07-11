@@ -77,6 +77,7 @@ gulp.task('html', copyHTML);
 gulp.task('fonts', copyFonts);
 gulp.task('scripts', copyScripts);
 gulp.task('clean', function () {
+    del('release');
     return del('www/build');
 });
 
@@ -84,13 +85,13 @@ gulp.task('clean', function () {
 gulp.task('electron', ['clean', 'build'], function () {
     gulp.src("")
         .pipe(electron({
-            src: 'www',
+            src: './platforms/browser/www',
             packageJson: packageJson,
             release: './release',
             cache: './cache',
             version: 'v0.37.4',
             packaging: true,
-            token: 'c0c8c81bc58bce8c326378efc877bb5db4503b91',
+            token: '',
             platforms: ['darwin-x64', 'win32-ia32'],
             platformResources: {
                 darwin: {

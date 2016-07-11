@@ -48,7 +48,15 @@
   "version": "0.0.1",
   "scripts": {
     "electron": "electron .",
-    "electron dist": "electron ."
+    "electron dist": "electron .",
+
+    "clear:osx": "rm -rf *-darwin-x64; rm -rf *-mas-x64",
+    "clear:win": "rm -rf *-win32-ia32; rm -rf *-win32-x64",
+    "clear:nix": "rm -rf *-linux-ia32; rm -rf *-linux-x64",
+
+    "pack:osx": "npm run clear:osx && electron-packager ./www/ --platform=darwin,mas --arch=x64 --asar ",
+    "pack:win": "npm run clear:win && electron-packager ./www/ --platform=win32 --arch=ia32,x64 --asar ",
+    "pack:nix": "npm run clear:nix && electron-packager ./www/ --platform=linux --arch=ia32,x64 --asar "
   },
   "main": "electron.js"
 }
