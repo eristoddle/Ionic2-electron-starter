@@ -1,4 +1,4 @@
-#Ionic2/Electron Starter Project
+# Ionic2/Electron Starter Project
 
 While it seemed straightforward to do this at first, there were a few quirks that made me create this repo in case I have to do it again. It saves a few hours.
 
@@ -15,7 +15,7 @@ It's a work in progress. So feel free to fork and do pull requests.
 
 Currently `gulp build` will build the web, android and ios apps and `gulp electron:all` will build the Windows, OSX, and Linux applications.
 
-##TODO
+## TODO
 
 - task to build all applications with one command
 - task to do a full release process, with auto versioning, etc.
